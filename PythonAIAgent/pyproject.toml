@@ -1,0 +1,29 @@
+[project]
+name = "pythonaiagent"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Ahmad Akra",email = "ahakra@outlook.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "smolagents[openai] (>=1.19.0,<2.0.0)",
+    "python-dotenv (>=1.1.1,<2.0.0)"
+]
+
+[tool.poetry]
+name = "pythonaiagent"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+packages = [{ include = "pythonaiagent", from = "src" }]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.scripts]
+agent = "pythonaiagent.main:main"

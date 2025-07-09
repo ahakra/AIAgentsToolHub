@@ -14,5 +14,7 @@ func (app *application) routes() http.Handler {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
 
+	r.Get("/tools/search", app.GetToolByDescriptionHandler)
+
 	return r
 }

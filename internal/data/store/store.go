@@ -96,27 +96,3 @@ func seedToolsIfEmpty(db *sql.DB) error {
 
 	return nil
 }
-
-func SearchTools(db *sql.DB, query string) ([]model.Tool, error) {
-
-	rows, err := db.Query("SELECT tool_name, tool_description, tool_input, tool_output, bm25(tools) as score FROM tools WHERE tools MATCH ?", query)
-	if err != nil {
-		return nil, fmt.Errorf("search failed: %w", err)
-	}
-	defer rows.Close()
-
-	var results []model.Tool
-	for rows.Next() {
-		var t model.Tool
-		if err := rows.Scan(&t.Name, &t.Description, &t.Input, &t.Output, &t.Score); err != nil {
-			return nil, fmt.Errorf("row scan failed: %w", err)
-		}
-		results = append(results, t)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("rows iteration error: %w", err)
-	}
-
-	return results, nil
-}

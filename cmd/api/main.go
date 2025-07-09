@@ -2,6 +2,9 @@ package main
 
 import (
 	"AIAgentsToolHub/internal/data/store"
+	"AIAgentsToolHub/internal/data/toolrepo"
+	"AIAgentsToolHub/internal/service"
+	"context"
 	"flag"
 	"log/slog"
 	"os"
@@ -16,8 +19,9 @@ type config struct {
 }
 
 type application struct {
-	config config
-	logger *slog.Logger
+	config      config
+	logger      *slog.Logger
+	toolService *service.ToolService
 }
 
 func main() {
@@ -53,13 +57,23 @@ func main() {
 
 	defer db.Close()
 
-	tools, err := store.SearchTools(db, "  multiply")
+	toolRepo := toolrepo.NewToolRepo(db)
+	toolService := service.NewToolService(toolRepo)
+
+	app.toolService = &toolService
+
+	ctx := context.Background()
+
+	//For trying out things
+	// TBD Later
+	tools, err := app.toolService.GetToolByDescription(ctx, "multiply")
 	if err != nil {
 		app.LogError(err.Error())
 	}
 
 	for _, t := range tools {
 		app.logger.Info("Tool found",
+			"ID", t.ID,
 			"Name", t.Name,
 			"Description", t.Description,
 			"Input", t.Input,

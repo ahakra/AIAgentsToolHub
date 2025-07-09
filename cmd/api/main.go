@@ -53,7 +53,7 @@ func main() {
 
 	defer db.Close()
 
-	tools, err := store.SearchTools(db, "add")
+	tools, err := store.SearchTools(db, "  multiply")
 	if err != nil {
 		app.LogError(err.Error())
 	}

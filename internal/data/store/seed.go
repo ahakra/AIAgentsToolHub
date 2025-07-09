@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/google/uuid"
 	_ "github.com/knaka/go-sqlite3-fts5"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -21,6 +22,7 @@ func InitDB(dbPath string) (*sql.DB, error) {
 	// This to enable full text search
 	createTable := `
 	CREATE VIRTUAL TABLE IF NOT EXISTS tools USING fts5(
+		tool_id ,
 		tool_name,
 		tool_location,
 		tool_description,
@@ -46,17 +48,35 @@ func InitDB(dbPath string) (*sql.DB, error) {
 	if count == 0 {
 		log.Println("Seeding tools table...")
 
-		seed := `
-		INSERT INTO tools (tool_name, tool_location, tool_description, tool_input, tool_output, tool_type)
-		VALUES (?, ?, ?, ?, ?, ?);
+		seed_add := `
+		INSERT INTO tools (tool_id,tool_name, tool_location, tool_description, tool_input, tool_output, tool_type)
+		VALUES (?,?, ?, ?, ?, ?, ?);
 		`
 
-		_, err := db.Exec(seed,
+		_, err := db.Exec(seed_add,
+			uuid.New(),
 			"add",
 			"./bin/add",
 			"adds two integers together",
 			`{"x": "int", "y": "int"}`,
 			`{"sum": "int"}`,
+			model.CLITool,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("seeding error: %w", err)
+		}
+		seed_multiply := `
+		INSERT INTO tools (tool_id,tool_name, tool_location, tool_description, tool_input, tool_output, tool_type)
+		VALUES (?,?, ?, ?, ?, ?, ?);
+		`
+
+		_, err = db.Exec(seed_multiply,
+			uuid.New(),
+			"multiply",
+			"./bin/multiply",
+			"multiply two integers together",
+			`{"x": "int", "y": "int"}`,
+			`{"multiply": "int"}`,
 			model.CLITool,
 		)
 		if err != nil {
